@@ -18,13 +18,15 @@ def main(argv):
             VERIFY_URL = arg
     if API_KEY == '' or VERIFY_URL == '':
         print('Please supply both an API Key and the URL of the API endpoint for credential verification')
-        
-    run_tests(API_KEY, VERIFY_URL)
+    else:    
+        run_tests(API_KEY, VERIFY_URL)
     
 def run_tests(api_key, verify_url):
     with open('sad-path-tests.json', 'r') as f:
         test_cases = json.loads(f.read())
         
+    win_count = 0
+
     for i in range(len(test_cases)):
         r = requests.post(verify_url,
                           headers = {
@@ -37,7 +39,10 @@ def run_tests(api_key, verify_url):
         expected_response_str = json.dumps(test_cases[i]['response'])
         if response_str != expected_response_str:
             print('Case {} failed\n\nExpected:\n\n{}\n\nBut got:\n\n{}\n_______'.format(i, expected_response_str, response_str))
+        else:
+            win_count += 1
         time.sleep(.1)
+    print('{}/{} tests completed successfully'.format(win_count, len(test_cases)))
     
     
 if __name__ == "__main__":
